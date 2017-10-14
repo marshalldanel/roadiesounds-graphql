@@ -24,13 +24,37 @@ const spotifyApi = new SpotifyWebApi({
 
 const TracksType = new GraphQLObjectType({
   name: 'Tracks',
-  description: '...',
+  description:'...',
 
   fields: () => ({
     name: {
       type: GraphQLString,
+      resolve: response => 
+        response.name
+    },
+    track_id: {
+      type: GraphQLString,
+      resolve: response => 
+        response.id
+    },
+    preview_url: {
+      type: GraphQLString,
+      resolve: response => 
+        response.preview_url
+    }
+  })
+})
+
+const TracksArrType = new GraphQLObjectType({
+  name: 'TracksArr',
+  description: '...',
+
+  fields: () => ({
+    tracks: {
+      type: new GraphQLList(TracksType),
       resolve: response => {
-        console.log('this is not working right now ;(')
+        return response.tracks
+        // console.log('this is not working right now ;(', response)
       }
     }
   })
@@ -47,14 +71,16 @@ const SpotifyType = new GraphQLObjectType({
         return response.artists.items[0].id
       }
     },
-    tracks: {
-      type: new GraphQLList(TracksType),
+    track_arr: {
+      type: TracksArrType,
       resolve: response => {
         const id = response.artists.items[0].id
-        return fetch(
-          `https://api.spotify.com/v1/artists/${id}/top-tracks?country=US&access_token=${process.env.ACCESS_TOKEN}`
-        )
-        .then(response => response.json())
+          return fetch(
+            `https://api.spotify.com/v1/artists/${id}/top-tracks?country=US&access_token=${process.env.ACCESS_TOKEN}`
+          )
+          .then(response => response.json())
+          // .then(data => console.log('data', data.tracks[0]))
+        // return response.artists.items
       }
     }
   })
@@ -106,6 +132,7 @@ const EventType = new GraphQLObjectType({
           `https://api.spotify.com/v1/search?q=${artist}&type=artist&access_token=${process.env.ACCESS_TOKEN}&limit=1`
         )
         .then(response => response.json())
+        // .then(data => console.log(data)) // Check if access token expired.. need to fix
       }
     },
     venue_address: {
