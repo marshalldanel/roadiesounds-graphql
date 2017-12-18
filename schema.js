@@ -78,9 +78,12 @@ const SpotifyType = new GraphQLObjectType({
           return fetch(
             `https://api.spotify.com/v1/artists/${id}/top-tracks?country=US&access_token=${process.env.ACCESS_TOKEN}`
           )
-          .then(response => response.json())
-          // .then(data => console.log('data', data.tracks[0]))
-        // return response.artists.items
+          .then(response => {return response.json()})
+          .then(response => { 
+            let tracks = response.tracks.slice(0, 3);
+            let newTracks = {tracks};
+            return newTracks;
+          })
       }
     }
   })
@@ -158,6 +161,12 @@ const CityType = new GraphQLObjectType({
   description: '...',
 
   fields: () => ({
+    location: {
+      type: GraphQLString,
+      resolve: response => {
+        return response.location
+      }
+    },
     totalEvents: {
       type: GraphQLString,
       resolve: response => {
@@ -190,7 +199,13 @@ module.exports = new GraphQLSchema({
         resolve: (root, args) => fetch(
             `http://api.eventful.com/json/events/search?app_key=${process.env.EVENTFUL_KEY}&categories=music_${args.genre}&location=${args.location}&date=${args.start_date}00-${args.end_date}00&page_size=25`
         )
-          .then(response => response.json())
+          .then(response => {
+            return response.json()
+          })
+          .then(response => {
+            response.location = args.location;
+            return response;
+          })
       },
       // Only add to get an access token if expires
       spotify: {
