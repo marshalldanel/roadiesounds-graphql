@@ -10,5 +10,5 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
-app.listen(4000);
-console.log('Listening...');
+app.listen(3000);
+console.log('Listening on 0.0.0.0:3000/graphql');

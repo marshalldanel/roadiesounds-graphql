@@ -75,15 +75,15 @@ const SpotifyType = new GraphQLObjectType({
       type: TracksArrType,
       resolve: response => {
         const id = response.artists.items[0].id
-          return fetch(
-            `https://api.spotify.com/v1/artists/${id}/top-tracks?country=US&access_token=${process.env.ACCESS_TOKEN}`
-          )
-          .then(response => {return response.json()})
-          .then(response => { 
-            let tracks = response.tracks.slice(0, 3);
-            let newTracks = {tracks};
-            return newTracks;
-          })
+        return fetch(
+          `https://api.spotify.com/v1/artists/${id}/top-tracks?country=US&access_token=${process.env.ACCESS_TOKEN}`
+        )
+        .then(response => {return response.json()})
+        .then(response => { 
+          let tracks = response.tracks.slice(0, 3);
+          let newTracks = {tracks};
+          return newTracks;
+        })
       }
     }
   })
@@ -176,6 +176,7 @@ const CityType = new GraphQLObjectType({
     events: {
       type: new GraphQLList(EventType),
       resolve: response => {
+        console.log('csbfkjsdfbsdhjfbdsf', response)
         return response.events.event
       }
     }
